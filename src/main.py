@@ -14,12 +14,12 @@ def main():
     - 市场份额扩大至30%
 
     ## 业绩图表 [Title and Picture 1]
-    ![业绩图表](images/performance_chart.png)
+    ![业绩图表](../images/performance_chart.png)
 
     ## 新产品发布 [Title and 2 Column]
     - 产品A: 特色功能介绍
     - 产品B: 市场定位
-    ![未来增长](images/forecast.png)
+    ![未来增长](../images/forecast.png)
     """
 
     template_file = 'templates/MasterTemplate.pptx'
