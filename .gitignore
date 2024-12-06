@@ -167,3 +167,9 @@ outputs/*
 tests/*
 .DS_STore
 jupyter/*.pptx
+/docs/
+/jupyter/
+/src/logs/
+/templates/
+/src/templates/
+/src/outputs/

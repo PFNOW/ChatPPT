@@ -14,7 +14,7 @@ ChatPPT 是一个基于多模态 AI 技术的智能助手，旨在提升企业�
 ### 产品截图
 
 **自动生成的演示文稿内容**
-![chatppt_presentation_demo](images/chatppt_presentation_demo.png)
+![chatppt_presentation_demo](src/images/chatppt_presentation_demo.png)
 
 ## 快速开始
 
