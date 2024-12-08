@@ -17,6 +17,10 @@
 - 市场份额占比逐步提升
 [市场分析](inputs/test_input.xlsx)
 
+## 行业趋势
+- 人工智能领域崛起
+[市场分析](inputs/test_input.xlsx)?chart
+
 ## 结语
 - 总结经营业绩
 - 展望未来发展

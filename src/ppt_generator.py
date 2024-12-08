@@ -1,9 +1,12 @@
 import os
 from pptx import Presentation
+from pptx.chart.data import ChartData
+
 from utils import remove_all_slides
 from logger import LOG  # 引入日志模块
 import pandas as pd  # 引入pandas模块读取表格数据
 from pptx.util import Inches  # 引入 Inches 类，用于设置大小
+from pptx.enum.chart import XL_CHART_TYPE  # 引入 XL_CHART_TYPE 类，用于设置图表类型
 
 # todo:表格功能支持除Excel以外的其他表格格式，如csv、txt、markdown、json等
 # todo:支持用户自己选择的图表、插入组合图表
@@ -63,7 +66,7 @@ def generate_presentation(powerpoint_data, template_path: str, output_path: str)
             else:
                 LOG.warning(f"图片路径 '{image_full_path}' 不存在，跳过此图片。")
 
-        # 插入表格和图表
+        # 插入表格
         if slide.content.table_path:
             table_full_path = os.path.join(os.getcwd(), slide.content.table_path)  # 构建表格的绝对路径
             if os.path.exists(table_full_path):
@@ -90,10 +93,18 @@ def generate_presentation(powerpoint_data, template_path: str, output_path: str)
             if os.path.exists(chart_full_path):
                 # 插入图表到占位符中
                 for shape in new_slide.placeholders:
-                    if shape.placeholder_format.type == 12:  # 12 表示组合图表占位符
-                        chart_type = slide.content.chart_type
-                        chart_data = pd.read_excel(chart_full_path)
-                        chart_data.plot(kind=chart_type, ax=shape.chart.chart_data.plot(kind=chart_type))
+                    if shape.placeholder_format.type == 8:  # 8 表示图表占位符
+                        chart_type = XL_CHART_TYPE.COLUMN_CLUSTERED  # 默认为堆积折线图 TODO: 支持用户自定义图表类型
+                        data= pd.read_excel(chart_full_path)
+                        rows, cols = data.shape
+                        chart_data = ChartData()
+                        chart_data.categories = data.columns[1:]
+                        # 填充数据
+                        for r in range(0, rows):
+                            chart_series_name = str(data.iat[r, 0])
+                            chart_series = (float(data.iat[r, c]) for c in range(1, cols))
+                            chart_data.add_series(chart_series_name, chart_series)
+                        shape.insert_chart(chart_type, chart_data)
                         LOG.debug(f"插入图表: {chart_full_path}")
                         break
             else:

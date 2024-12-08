@@ -6,6 +6,8 @@ from slide_builder import SlideBuilder
 from layout_manager import LayoutManager
 from logger import LOG  # 引入日志模块
 
+# todo: 增加对表格和图表的支持
+
 # 解析输入文本，生成 PowerPoint 数据结构
 def parse_input_text(input_text: str, layout_manager: LayoutManager) -> PowerPoint:
     """
@@ -23,6 +25,7 @@ def parse_input_text(input_text: str, layout_manager: LayoutManager) -> PowerPoi
     media_poster_pattern = re.compile(r'!\[.*?\]\((media.*?\.(jpg|jpeg|png|gif|bmp|tiff|svg))\)')
     media_pattern = re.compile(r'!\[.*?\]\((.*?\.(mp4|wmv|avi|mov|mkv|flv|mpeg|mpg|webm|mp3|wav|wma|aac|m4a|ogg))\)')
     table_pattern = re.compile(r'\[.*?\]\((.*?\.xlsx?)\)')
+    chart_pattern = re.compile(r'\[.*?\]\((.*?\.xlsx?)\)\?chart')
 
     for line in lines:
         line = line.strip()  # 去除空格
@@ -74,12 +77,18 @@ def parse_input_text(input_text: str, layout_manager: LayoutManager) -> PowerPoi
                         media_poster_path = match.group(1).strip()
                         slide_builder.set_media_poster(media_poster_path)
 
-        # 表格插入
+        # 表格和图表插入
         elif line.startswith('[') and slide_builder:
             match = table_pattern.match(line)
             if match:
-                table_path = match.group(1).strip()
-                slide_builder.set_table(table_path)
+                chart_match = chart_pattern.match(line)
+                if chart_match:
+                    chart_path = chart_match.group(1).strip()
+                    # chart_type = chart_match.group(2).strip()  # 图表类型
+                    slide_builder.set_chart(chart_path)
+                else:
+                    table_path = match.group(1).strip()
+                    slide_builder.set_table(table_path)
 
     # 为最后一张幻灯片分配布局并添加到列表中
     if slide_builder:

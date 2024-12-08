@@ -39,4 +39,8 @@ class PowerPoint:
             if slide.content.media_path:
                 result.append(f"  Media: {slide.content.media_path}")  # 打印视频路径
                 result.append(f"  MediaPoster: {slide.content.media_poster_path}")
+            if slide.content.table_path:
+                result.append(f"  Table: {slide.content.table_path}")
+            if slide.content.chart_path:
+                result.append(f"  Chart: {slide.content.chart_path}")
         return "\n".join(result)
