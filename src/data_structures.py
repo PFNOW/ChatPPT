@@ -10,6 +10,7 @@ class SlideContent:
     table_path: Optional[str] = None  # 幻灯片中的表格路径，默认为 None
     chart_path: Optional[str] = None  # 幻灯片中的图表路径，默认为 None
     media_path: Optional[str] = None  # 幻灯片中的视频路径，默认为 None
+    media_poster_path: Optional[str] = None  # 幻灯片中的视频封面路径，默认为 None
 
 # 定义 Slide 数据类，表示每张幻灯片，包括布局 ID、布局名称以及幻灯片内容。
 @dataclass
@@ -35,4 +36,7 @@ class PowerPoint:
                 result.append(f"  Bullet Points: {', '.join(slide.content.bullet_points)}")  # 打印要点列表
             if slide.content.image_path:
                 result.append(f"  Image: {slide.content.image_path}")  # 打印图片路径
+            if slide.content.media_path:
+                result.append(f"  Media: {slide.content.media_path}")  # 打印视频路径
+                result.append(f"  MediaPoster: {slide.content.media_poster_path}")
         return "\n".join(result)

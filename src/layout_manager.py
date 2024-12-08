@@ -60,14 +60,14 @@ class TitleContentAndChartStrategy(LayoutStrategy):
 # TitleAndMediaStrategy 类，表示包含标题和视频的布局策略。
 class TitleAndMediaStrategy(LayoutStrategy):
     def get_layout(self, slide_content: SlideContent, layout_mapping: dict) -> Tuple[int, str]:
-        layout_name = 'Title and Media'  # 布局名称为 "Title and media"
+        layout_name = 'Title and Media'  # 布局名称为 "Title and Media"
         layout_id = layout_mapping.get(layout_name, 7)  # 获取布局 ID，默认值为 7
         return layout_id, layout_name
 
 # TitleContentAndMediaStrategy 类，表示包含标题、内容和视频的布局策略。
 class TitleContentAndMediaStrategy(LayoutStrategy):
     def get_layout(self, slide_content: SlideContent, layout_mapping: dict) -> Tuple[int, str]:
-        layout_name = 'Title, Content, and Media'  # 布局名称为 "Title, Content, and media"
+        layout_name = 'Title, Content, and Media'  # 布局名称为 "Title, Content, and Media"
         layout_id = layout_mapping.get(layout_name, 8)  # 获取布局 ID，默认值为 8
         return layout_id, layout_name
 

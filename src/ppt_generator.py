@@ -3,9 +3,12 @@ from pptx import Presentation
 from utils import remove_all_slides
 from logger import LOG  # 引入日志模块
 import pandas as pd  # 引入pandas模块读取表格数据
+from pptx.util import Inches  # 引入 Inches 类，用于设置大小
 
 # todo:表格功能支持除Excel以外的其他表格格式，如csv、txt、markdown、json等
 # todo:支持用户自己选择的图表、插入组合图表
+# todo:支持插入视频，但目前存在一些问题，如视频大小和位置的设置
+# pptx库不支持对多媒体占位符的操作，直接插入视频的操作也有问题，必须指定视频的大小和位置，否则会报错
 
 # 生成 PowerPoint 演示文稿
 def generate_presentation(powerpoint_data, template_path: str, output_path: str):
@@ -67,18 +70,16 @@ def generate_presentation(powerpoint_data, template_path: str, output_path: str)
                 # 插入表格到占位符中
                 for shape in new_slide.placeholders:
                     if shape.placeholder_format.type == 12:  # 17 表示表格占位符
-                        rows, cols = 3,3
-                        table = shape.insert_table(rows, cols).table
-                        # 读取 Excel 文件
-                        data = pd.read_excel(table_full_path)
-                        # 填充标题
-                        for col, column_name in enumerate(data.columns):
-                            table.cell(0, col).text = column_name
+                        data = pd.read_excel(table_full_path) # 读取 Excel 文件
+                        rows, cols = data.shape
+                        table = shape.insert_table(rows+1, cols).table
+                        # 设置表头
+                        for col_num, column_title in enumerate(data.columns):
+                            table.cell(0, col_num).text = str(column_title)
                         # 填充数据
-                        for row, (_, row_data) in enumerate(data.iterrows(), start=1):
-                            for col, value in enumerate(row_data):
-                                table.cell(row, col).text = str(value)
-                        LOG.debug(f"插入表格: {table_full_path}")
+                        for r in range(1, rows + 1):
+                            for c in range(0, cols):
+                                table.cell(r, c).text = str(data.iat[r - 1, c])
                         break
             else:
                 LOG.warning(f"表格路径 '{table_full_path}' 不存在，跳过此表格。")
@@ -89,7 +90,7 @@ def generate_presentation(powerpoint_data, template_path: str, output_path: str)
             if os.path.exists(chart_full_path):
                 # 插入图表到占位符中
                 for shape in new_slide.placeholders:
-                    if shape.placeholder_format.type == 13:  # 13 表示组合图表占位符
+                    if shape.placeholder_format.type == 12:  # 12 表示组合图表占位符
                         chart_type = slide.content.chart_type
                         chart_data = pd.read_excel(chart_full_path)
                         chart_data.plot(kind=chart_type, ax=shape.chart.chart_data.plot(kind=chart_type))
@@ -100,16 +101,23 @@ def generate_presentation(powerpoint_data, template_path: str, output_path: str)
 
         # 插入多媒体
         if slide.content.media_path:
-            video_full_path = os.path.join(os.getcwd(), slide.content.media_path)  # 构建视频的绝对路径
-            if os.path.exists(video_full_path):
+            media_full_path = os.path.join(os.getcwd(), slide.content.media_path)  # 构建视频的绝对路径
+            if os.path.exists(media_full_path):
+                media_poster_path_full_path = ""  # 视频封面的路径
+                # 构建视频封面的绝对路径
+                if slide.content.media_poster_path:
+                    media_poster_path_full_path = os.path.join(os.getcwd(), slide.content.media_poster_path)  # 构建视频封面的绝对路径
+                if not os.path.exists(media_poster_path_full_path):
+                    new_slide.shapes.add_movie(media_full_path, Inches(4.5), Inches(2.5), Inches(8), Inches(4.5))  # 插入媒体到幻灯片中
+                else:
+                    new_slide.shapes.add_movie(media_full_path, Inches(4.5), Inches(2.5), Inches(8), Inches(4.5), media_poster_path_full_path)  # 插入媒体到幻灯片中
                 # 插入视频到占位符中
                 for shape in new_slide.placeholders:
-                    if shape.placeholder_format.type == 19:  # 19 表示视频占位符
-                        shape.insert_video(video_full_path)
-                        LOG.debug(f"插入视频: {video_full_path}")
+                    if shape.placeholder_format.type == 10:  # 10 表示视频占位符
+                        LOG.debug(f"插入视频: {media_full_path}")
                         break
             else:
-                LOG.warning(f"视频路径 '{video_full_path}' 不存在，跳过此视频。")
+                LOG.warning(f"视频路径 '{media_full_path}' 不存在，跳过此视频。")
 
     # 保存生成的 PowerPoint 文件
     prs.save(output_path)

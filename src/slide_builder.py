@@ -11,6 +11,7 @@ class SlideBuilder:
         self.table_path = None  # 幻灯片表格路径
         self.chart_path = None  # 幻灯片图表路径
         self.media_path = None  # 幻灯片媒体路径
+        self.media_poster_path = None  # 幻灯片媒体海报路径
         self.layout_id = None  # 布局ID
         self.layout_name = None  # 布局名称
 
@@ -29,6 +30,9 @@ class SlideBuilder:
     def set_media(self, media_path: str):
         self.media_path = media_path  # 设置媒体路径
 
+    def set_media_poster(self, media_poster_path: str):
+        self.media_poster_path = media_poster_path  # 设置媒体海报路径
+
     def set_chart(self, chart_path: str):
         self.chart_path = chart_path  # 设置图表路径
 
@@ -43,7 +47,8 @@ class SlideBuilder:
             image_path=self.image_path,
             table_path=self.table_path,
             chart_path=self.chart_path,
-            media_path=self.media_path
+            media_path=self.media_path,
+            media_poster_path=self.media_poster_path
         )
 
         # 调用 LayoutManager 分配布局

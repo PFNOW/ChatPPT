@@ -20,4 +20,6 @@
 ## 结语
 - 总结经营业绩
 - 展望未来发展
-![未来增长](media/test_input.mp4)
+![ChatGPT](media/test_input.mp4)
+![ChatGPT](media/test_input.png)
+- 

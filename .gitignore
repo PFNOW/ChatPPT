@@ -173,3 +173,4 @@ jupyter/*.pptx
 /templates/
 /src/templates/
 /src/outputs/
+/src/inputs/
