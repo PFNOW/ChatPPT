@@ -19,7 +19,9 @@ def parse_input_text(input_text: str, layout_manager: LayoutManager) -> PowerPoi
     # 正则表达式，用于匹配幻灯片标题、要点和图片
     slide_title_pattern = re.compile(r'^##\s+(.*)')
     bullet_pattern = re.compile(r'^-\s+(.*)')
-    image_pattern = re.compile(r'!\[.*?\]\((.*?)\)')
+    image_pattern = re.compile(r'!\[.*?\]\((.*?\.(jpg|jpeg|png|gif|bmp|tiff|svg))\)')
+    media_pattern = re.compile(r'!\[.*?\]\((.*?\.(mp4|wmv|avi|mov|mkv|flv|mpeg|mpg|webm|mp3|wav|wma|aac|m4a|ogg))\)')
+    table_pattern = re.compile(r'\[.*?\]\((.*?\.xlsx?)\)')
 
     for line in lines:
         line = line.strip()  # 去除空格
@@ -54,12 +56,24 @@ def parse_input_text(input_text: str, layout_manager: LayoutManager) -> PowerPoi
                 bullet = match.group(1).strip()
                 slide_builder.add_bullet_point(bullet)
 
-        # 图片插入
+        # 图片和多媒体插入
         elif line.startswith('![') and slide_builder:
             match = image_pattern.match(line)
             if match:
                 image_path = match.group(1).strip()
                 slide_builder.set_image(image_path)
+            else:
+                match = media_pattern.match(line)
+                if match:
+                    media_path = match.group(1).strip()
+                    slide_builder.set_media(media_path)
+
+        # 表格插入
+        elif line.startswith('[') and slide_builder:
+            match = table_pattern.match(line)
+            if match:
+                table_path = match.group(1).strip()
+                slide_builder.set_table(table_path)
 
     # 为最后一张幻灯片分配布局并添加到列表中
     if slide_builder:

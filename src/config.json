@@ -5,6 +5,10 @@
         "Title Only": 0,
         "Title and Content": 1,
         "Title and Picture": 2,
-        "Title, Content, and Picture": 3
+        "Title, Content, and Picture": 3,
+        "Title, Content, and Table": 4,
+        "Title, Content, and Chart": 5,
+        "Title, and Media": 6,
+        "Title，Content，and Media": 7
     }
 }

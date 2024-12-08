@@ -43,6 +43,34 @@ class TitleContentAndPictureStrategy(LayoutStrategy):
         layout_id = layout_mapping.get(layout_name, 4)  # 获取布局 ID，默认值为 4
         return layout_id, layout_name
 
+# TitleContentAndTableStrategy 类，表示包含标题、内容和表格的布局策略。
+class TitleContentAndTableStrategy(LayoutStrategy):
+    def get_layout(self, slide_content: SlideContent, layout_mapping: dict) -> Tuple[int, str]:
+        layout_name = 'Title, Content, and Table'  # 布局名称为 "Title, Content, and Table"
+        layout_id = layout_mapping.get(layout_name, 5)  # 获取布局 ID，默认值为 5
+        return layout_id, layout_name
+
+# TitleContentAndChartStrategy 类，表示包含标题、内容和图表的布局策略。
+class TitleContentAndChartStrategy(LayoutStrategy):
+    def get_layout(self, slide_content: SlideContent, layout_mapping: dict) -> Tuple[int, str]:
+        layout_name = 'Title, Content, and Chart'  # 布局名称为 "Title, Content, and Chart"
+        layout_id = layout_mapping.get(layout_name, 6)  # 获取布局 ID，默认值为 6
+        return layout_id, layout_name
+
+# TitleAndMediaStrategy 类，表示包含标题和视频的布局策略。
+class TitleAndMediaStrategy(LayoutStrategy):
+    def get_layout(self, slide_content: SlideContent, layout_mapping: dict) -> Tuple[int, str]:
+        layout_name = 'Title and Media'  # 布局名称为 "Title and media"
+        layout_id = layout_mapping.get(layout_name, 7)  # 获取布局 ID，默认值为 7
+        return layout_id, layout_name
+
+# TitleContentAndMediaStrategy 类，表示包含标题、内容和视频的布局策略。
+class TitleContentAndMediaStrategy(LayoutStrategy):
+    def get_layout(self, slide_content: SlideContent, layout_mapping: dict) -> Tuple[int, str]:
+        layout_name = 'Title, Content, and Media'  # 布局名称为 "Title, Content, and media"
+        layout_id = layout_mapping.get(layout_name, 8)  # 获取布局 ID，默认值为 8
+        return layout_id, layout_name
+
 # 布局管理器类，负责根据 SlideContent 自动选择合适的布局策略。
 class LayoutManager:
     """
@@ -50,12 +78,16 @@ class LayoutManager:
     """
     def __init__(self, layout_mapping: dict):
         self.layout_mapping = layout_mapping  # 布局映射配置
-        # 定义四种不同的布局策略
+        # 定义不同的布局策略
         self.strategies = {
             'Title Only': TitleOnlyStrategy(),
             'Title and Content': TitleAndContentStrategy(),
             'Title and Picture': TitleAndPictureStrategy(),
-            'Title, Content, and Picture': TitleContentAndPictureStrategy()
+            'Title, Content, and Picture': TitleContentAndPictureStrategy(),
+            'Title, Content, and Table': TitleContentAndTableStrategy(),
+            'Title, Content, and Chart': TitleContentAndChartStrategy(),
+            'Title and Media': TitleAndMediaStrategy(),
+            'Title, Content, and Media': TitleContentAndMediaStrategy(),
         }
 
     def assign_layout(self, slide_content: SlideContent) -> Tuple[int, str]:
@@ -68,6 +100,18 @@ class LayoutManager:
         # 如果只有图片，则使用 "Title and Picture" 布局
         elif slide_content.image_path:
             strategy = self.strategies['Title and Picture']
+        # 如果有表格，则使用 "Title, Content, and Table" 布局
+        elif slide_content.table_path and slide_content.bullet_points:
+            strategy = self.strategies['Title, Content, and Table']
+        # 如果有图表，则使用 "Title, Content, and Chart" 布局
+        elif slide_content.chart_path and slide_content.bullet_points:
+            strategy = self.strategies['Title, Content, and Chart']
+        # 如果有视频又有要点，则使用 "Title, Content, and media" 布局
+        elif slide_content.media_path and slide_content.bullet_points:
+            strategy = self.strategies['Title, Content, and Media']
+        # 如果有视频，则使用 "Title and media" 布局
+        elif slide_content.media_path:
+            strategy = self.strategies['Title and Media']
         # 如果只有要点，则使用 "Title and Content" 布局
         elif slide_content.bullet_points:
             strategy = self.strategies['Title and Content']

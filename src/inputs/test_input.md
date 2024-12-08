@@ -12,3 +12,12 @@
 - 产品A: 特色功能介绍
 - 产品B: 市场定位
 ![未来增长](images/forecast.png)
+
+## 市场分析
+- 市场份额占比逐步提升
+[市场分析](inputs/test_input.xlsx)
+
+## 结语
+- 总结经营业绩
+- 展望未来发展
+![未来增长](media/test_input.mp4)

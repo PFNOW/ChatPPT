@@ -7,6 +7,9 @@ class SlideContent:
     title: str  # 幻灯片的标题
     bullet_points: List[str] = field(default_factory=list)  # 幻灯片中的要点列表，默认为空列表
     image_path: Optional[str] = None  # 幻灯片中的图片路径，默认为 None
+    table_path: Optional[str] = None  # 幻灯片中的表格路径，默认为 None
+    chart_path: Optional[str] = None  # 幻灯片中的图表路径，默认为 None
+    media_path: Optional[str] = None  # 幻灯片中的视频路径，默认为 None
 
 # 定义 Slide 数据类，表示每张幻灯片，包括布局 ID、布局名称以及幻灯片内容。
 @dataclass
