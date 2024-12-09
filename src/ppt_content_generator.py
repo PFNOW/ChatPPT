@@ -1,4 +1,3 @@
-import os
 import re
 
 from logger import LOG  # 引入日志模块

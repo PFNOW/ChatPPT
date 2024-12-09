@@ -2,4 +2,5 @@ python-pptx==1.0.2
 loguru==0.7.2
 pandas~=2.2.3
 requests~=2.32.3
+gradio~=5.8.0
 openai~=1.57.0

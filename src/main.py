@@ -11,6 +11,10 @@ from layout_manager import LayoutManager
 from config import Config
 from logger import LOG  # 引入 LOG 模块
 
+# TODO：
+# 1. 增加命令行参数解析器，支持命令行参数输入
+# 2. 将PPT生成流程和启动方式分离
+
 # 定义主函数，处理输入并生成 PowerPoint 演示文稿
 def main(input_file):
     config = Config()  # 加载配置文件
@@ -18,7 +22,7 @@ def main(input_file):
     # 检查输入的 markdown 文件是否存在
     if not os.path.exists(input_file):
         LOG.error(f"{input_file} 不存在。")  # 如果文件不存在，记录错误日志
-        return
+        return f"{input_file} 不存在。"
 
     # 生成 PowerPoint 内容
     llm = LLM(config)  # 定义 LayoutManager 类

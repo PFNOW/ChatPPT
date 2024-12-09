@@ -1,5 +1,6 @@
 import json
 import requests
+from openai import OpenAI  # 导入OpenAI库用于访问GPT模型
 from logger import LOG  # 导入日志模块
 
 class LLM:
@@ -11,6 +12,7 @@ class LLM:
         """
         self.config = config
         self.model = config.llm_model_type.lower()  # 获取模型类型并转换为小写
+        self.conversation_history = []  # 全局变量，用于存储对话历史记录
         if self.model == "openai":
             from openai import OpenAI  # 导入OpenAI库用于访问GPT模型
             self.client = OpenAI(base_url=self.config.openai_url, api_key=self.config.openai_token)  # 创建OpenAI客户端实例
@@ -40,14 +42,13 @@ class LLM:
         if dry_run:
             # 如果启用了dry_run模式，将不会调用模型，而是将提示信息保存到文件中
             LOG.info("Dry run mode enabled. Saving prompt to file.")
-            with open("daily_progress/prompt.txt", "w+") as f:
+            with open("prompts/prompt.txt", "w+") as f:
                 json.dump(messages, f, indent=4, ensure_ascii=False)  # 将消息保存为JSON格式
-            LOG.debug("Prompt已保存到 daily_progress/prompt.txt")
+            LOG.debug("Prompt已保存到 prompts/prompt.txt")
             return "DRY RUN"
 
         # 根据选择的模型调用相应的生成报告方法
         if self.model == "openai":
-            from openai import OpenAI  # 导入OpenAI库用于访问GPT模型
             self.client = OpenAI(base_url=self.config.openai_url, api_key=self.config.openai_token)  # 创建OpenAI客户端实例
             return self._generate_report_openai(messages)
         elif self.model == "ollama":
@@ -55,6 +56,44 @@ class LLM:
             return self._generate_report_ollama(messages)
         else:
             raise ValueError(f"Unsupported model type: {self.model}")
+
+    def chat_with_gpt(self,user_input, system_prompt=None):
+        """
+        使用 LLM 聊天。
+
+        :param user_input: 包含用户内容的消息列表。
+        :param system_prompt: 系统提示信息。
+        :return: 生成的报告内容
+        """
+        # 与 OpenAI 接口交互函数
+        self.client = OpenAI(base_url=self.config.openai_url, api_key=self.config.openai_token)  # 创建OpenAI客户端实例
+        # 使用默认的 system prompt 如果用户没有输入
+        if system_prompt:
+            self.system_prompt = system_prompt
+        # 构造完整的消息列表
+        messages = [
+            {"role": "system", "content": self.system_prompt},
+            {"role": "user", "content": user_input}
+        ]
+        # 调用 API
+        LOG.info("使用 OpenAI GPT 模型开始生成。")
+        try:
+            response = self.client.chat.completions.create(
+                model=self.config.openai_model_name,
+                messages=messages
+            )
+            LOG.debug("GPT response: {}", response)
+            assistant_reply = response.choices[0].message.content
+        except Exception as e:
+            assistant_reply = f"Error: {e}"
+        # 更新对话上下文
+        self.conversation_history.append({"role": "user", "content": user_input})
+        # 将回复添加到对话历史中
+        self.conversation_history.append({"role": "assistant", "content": assistant_reply})
+        # 控制对话上下文长度（保留最近 10 条）
+        if len(self.conversation_history) > 10:
+            self.conversation_history = self.conversation_history[-10:]
+        return assistant_reply
 
     def _generate_report_openai(self, messages):
         """
@@ -128,5 +167,5 @@ if __name__ == '__main__':
 3.作业提交方式：将修改后的代码文件链接复制粘贴至下方评论框内并点击提交按钮即可。
 """
 
-    report = llm.generate_pptx_md(markdown_content, dry_run=False)
+    report = llm.chat_with_gpt(markdown_content)
     print(report)
